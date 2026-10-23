@@ -57,4 +57,18 @@ describe('matchGuess', () => {
       }),
     );
   });
+
+  // Pattern: conditional. If the guess is a rearrangement of the secret, every
+  // guess letter has a matching letter in the secret, so nothing is black.
+  // Rearrangements are generated directly by shuffling the secret.
+  it('a rearrangement of the secret has no blacks', () => {
+    const secretAndAnagram = word.chain(secret =>
+      fc.shuffledSubarray([...secret], { minLength: 5 }).map(cs => [secret, cs.join('')] as const),
+    );
+    fc.assert(
+      fc.property(secretAndAnagram, ([secret, guess]) => {
+        expect(matchGuess(secret, guess)).not.toContain('B');
+      }),
+    );
+  });
 });
